@@ -144,7 +144,7 @@ const calcDisplaySummary = function (acc) {
   const out = acc.movements
     .filter(mov => mov < 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumOut.textContent = currencyFormatter(out, acc.locale, acc.currency);
+  labelSumOut.textContent = currencyFormatter(Math.abs(out), acc.locale, acc.currency);
 
   const interest = acc.movements
     .filter(mov => mov > 0)
@@ -262,12 +262,11 @@ btnLoan.addEventListener('click', function (e) {
   const amount = Math.floor(inputLoanAmount.value);
 
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
-    // Add movement
+
+    setTimeout(function(){
     currentAccount.movements.push(amount);
     currentAccount.movementsDates.push(new Date().toISOString());
-
-    // Update UI
-    updateUI(currentAccount);
+    updateUI(currentAccount);},2500)
   }
   inputLoanAmount.value = '';
 });
@@ -316,3 +315,7 @@ labelBalance.addEventListener('click', function () {
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
+setInterval(function(){
+  const now = new Date();
+  console.log(`${now.getHours()} : ${now.getMinutes()} : ${now.getSeconds()}`);
+}, 1000)
