@@ -187,12 +187,34 @@ const updateUI = function (acc) {
 
 ///////////////////////////////////////
 // Event handlers
-let currentAccount;
+const startLogOutTimer = function(){
+  const tickt = function() {
+    const min = String(Math.trunc(time / 60)).padStart(2, 0)
+    const sec = String(time % 60).padStart(2,0)
+    labelTimer.textContent = `${min}:${sec}`
+    
+    if(time === 0){
+      clearInterval(timer)
+      labelWelcome.textContent = `Login for start again`;
+      containerApp.style.opacity = 0; 
+    }
+    time--;
+}
+    let time = 120
+    tickt()  
+    const timer = setInterval(tickt, 1000)
+    return timer
+}
+
+
+    
+
+let currentAccount, timer;
 
 btnLogin.addEventListener('click', function (e) {
   // Prevent form from submitting
   e.preventDefault();
-
+  
   currentAccount = accounts.find(
     acc => acc.username === inputLoginUsername.value
   );
@@ -220,9 +242,11 @@ btnLogin.addEventListener('click', function (e) {
     ).format(now);
     containerApp.style.opacity = 100;
 
-    // Clear input fields
+    // Clear input fields    
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur();
+    if (timer) clearInterval(timer)
+    timer = startLogOutTimer()
 
     // Update UI
     updateUI(currentAccount);
@@ -250,7 +274,8 @@ btnTransfer.addEventListener('click', function (e) {
     //add current time
     currentAccount.movementsDates.push(new Date().toISOString());
     receiverAcc.movementsDates.push(new Date().toISOString());
-
+    clearInterval(timer)
+    startLogOutTimer(timer)
     // Update UI
     updateUI(currentAccount);
   }
@@ -269,6 +294,8 @@ btnLoan.addEventListener('click', function (e) {
     updateUI(currentAccount);},2500)
   }
   inputLoanAmount.value = '';
+  clearInterval(timer)
+  startLogOutTimer(timer)
 });
 
 btnClose.addEventListener('click', function (e) {
@@ -315,7 +342,3 @@ labelBalance.addEventListener('click', function () {
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
-setInterval(function(){
-  const now = new Date();
-  console.log(`${now.getHours()} : ${now.getMinutes()} : ${now.getSeconds()}`);
-}, 1000)
